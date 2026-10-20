@@ -25,6 +25,13 @@ TEXT_CONTENT_TYPES = ("text/plain", "text/markdown")
 # Page furniture that is never the main content.
 NON_CONTENT_TAGS = ["script", "style", "noscript", "template", "svg", "iframe", "nav", "header", "footer", "aside", "form"]
 
+# Elements that start a new line of text. Inline elements (links, <b>, <span>...)
+# must not, or every link would split its sentence onto separate lines.
+BLOCK_TAGS = [
+    "p", "div", "section", "article", "main", "blockquote", "pre", "br", "hr",
+    "h1", "h2", "h3", "h4", "h5", "h6", "li", "dt", "dd", "tr", "table", "figcaption",
+]
+
 
 @dataclass(frozen=True)
 class FetchedPage:
@@ -119,8 +126,14 @@ def _extract_from_html(html: bytes) -> tuple[str | None, str]:
     for tag in soup(NON_CONTENT_TAGS):
         tag.decompose()
 
+    # Line breaks in the HTML source are just formatting; only block elements end a line.
+    for text_node in soup.find_all(string=True):
+        text_node.replace_with(re.sub(r"\s+", " ", text_node))
+    for tag in soup(BLOCK_TAGS):
+        tag.insert_after("\n")
+
     root = soup.find("main") or soup.find("article") or soup.body or soup
-    return title or None, _normalize_whitespace(root.get_text(separator="\n"))
+    return title or None, _normalize_whitespace(root.get_text())
 
 
 def _normalize_whitespace(text: str) -> str:

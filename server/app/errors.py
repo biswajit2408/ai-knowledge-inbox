@@ -38,6 +38,12 @@ class UpstreamTimeoutError(AppError):
     status_code = status.HTTP_504_GATEWAY_TIMEOUT
 
 
+class ServiceUnavailableError(AppError):
+    """Temporarily unavailable, e.g. the LLM API is rate limiting us. Retry later."""
+
+    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+
+
 async def app_error_handler(_: Request, exc: Exception) -> JSONResponse:
     assert isinstance(exc, AppError)
     logger.warning("request failed", extra={"error_type": type(exc).__name__, "detail": exc.message})

@@ -2,6 +2,7 @@ import { ErrorMessage } from '@/components/ErrorMessage'
 import { SourceBadge } from '@/components/SourceBadge'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { pluralize } from '@/lib/format'
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
 
@@ -52,8 +53,8 @@ function ItemRow({ item }) {
       )}
       <p className="text-muted-foreground line-clamp-2 text-sm">{item.content_preview}</p>
       <p className="text-muted-foreground text-xs">
-        {dateFormat.format(new Date(item.created_at))} · {item.chunk_count} chunk
-        {item.chunk_count === 1 ? '' : 's'} · {item.content_length.toLocaleString()} characters
+        {dateFormat.format(new Date(item.created_at))} · {pluralize(item.chunk_count, 'chunk')} ·{' '}
+        {item.content_length.toLocaleString()} characters
       </p>
     </li>
   )

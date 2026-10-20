@@ -9,6 +9,7 @@ from app.config import get_settings
 from app.errors import UpstreamError
 from app.services.gemini import get_client, translate_gemini_errors
 from app.services.retrieval import RetrievedChunk
+from app.timing import elapsed_ms
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ async def generate_answer(question: str, sources: list[RetrievedChunk]) -> Answe
             "cited": sorted(cited),
             "prompt_tokens": usage.prompt_token_count if usage else None,
             "output_tokens": usage.candidates_token_count if usage else None,
-            "duration_ms": round((time.perf_counter() - start) * 1000, 2),
+            "duration_ms": elapsed_ms(start),
         },
     )
     return Answer(text=text, cited_numbers=cited)

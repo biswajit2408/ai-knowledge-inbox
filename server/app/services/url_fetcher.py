@@ -11,6 +11,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from app.errors import BadRequestError, UnprocessableContentError, UpstreamError, UpstreamTimeoutError
+from app.timing import elapsed_ms
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +90,7 @@ async def fetch_page(url: str) -> FetchedPage:
             "bytes": len(body),
             "text_length": len(text),
             "truncated": len(text) > MAX_TEXT_LENGTH,
-            "duration_ms": round((time.perf_counter() - start) * 1000, 2),
+            "duration_ms": elapsed_ms(start),
         },
     )
     return FetchedPage(title=title, text=text[:MAX_TEXT_LENGTH])

@@ -8,6 +8,7 @@ import numpy as np
 from app.db import chunks_repository
 from app.db.chunks_repository import StoredChunk
 from app.services import embeddings
+from app.timing import elapsed_ms
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ async def search(conn: sqlite3.Connection, question: str, top_k: int) -> list[Re
             "searched": len(chunks),
             "returned": len(results),
             "top_score": round(results[0].score, 4),
-            "search_ms": round((time.perf_counter() - start) * 1000, 2),
+            "search_ms": elapsed_ms(start),
         },
     )
     return results

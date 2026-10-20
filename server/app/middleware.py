@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from app.request_context import request_id_var
+from app.timing import elapsed_ms
 
 logger = logging.getLogger("app.request")
 
@@ -35,7 +36,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
                 content={"detail": "Internal server error", "request_id": request_id},
             )
 
-        duration_ms = round((time.perf_counter() - start) * 1000, 2)
+        duration_ms = elapsed_ms(start)
         level = logging.ERROR if response.status_code >= 500 else (
             logging.WARNING if response.status_code >= 400 else logging.INFO
         )

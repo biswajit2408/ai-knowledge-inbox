@@ -8,6 +8,7 @@ from google.genai import types
 from app.config import get_settings
 from app.errors import UpstreamError
 from app.services.gemini import get_client, translate_gemini_errors
+from app.timing import elapsed_ms
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +59,7 @@ async def _embed(texts: list[str], task_type: TaskType, title: str | None = None
             "task_type": task_type,
             "count": len(texts),
             "dimensions": matrix.shape[1],
-            "duration_ms": round((time.perf_counter() - start) * 1000, 2),
+            "duration_ms": elapsed_ms(start),
         },
     )
     return _normalize(matrix)

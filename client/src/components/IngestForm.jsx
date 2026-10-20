@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
+import { pluralize } from '@/lib/format'
 
 export function IngestForm({ onSubmit }) {
   const [mode, setMode] = useState('note')
@@ -37,8 +38,7 @@ export function IngestForm({ onSubmit }) {
 
     try {
       const item = await onSubmit(payload)
-      const chunks = `${item.chunk_count} chunk${item.chunk_count === 1 ? '' : 's'}`
-      setSavedMessage(`Saved "${item.title}" (${chunks}).`)
+      setSavedMessage(`Saved "${item.title}" (${pluralize(item.chunk_count, 'chunk')}).`)
       setContent('')
       setUrl('')
       setTitle('')

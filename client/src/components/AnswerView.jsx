@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { AnswerText } from '@/components/AnswerText'
 import { SourceCard } from '@/components/SourceCard'
+import { pluralize } from '@/lib/format'
 
 export function AnswerView({ result }) {
   const [highlighted, setHighlighted] = useState(null)
@@ -34,7 +35,7 @@ export function AnswerView({ result }) {
       {otherSources.length > 0 && (
         <details className="group">
           <summary className="text-muted-foreground hover:text-foreground cursor-pointer text-sm">
-            {otherSources.length} other retrieved chunk{otherSources.length === 1 ? '' : 's'} (not cited)
+            {pluralize(otherSources.length, 'other retrieved chunk')} (not cited)
           </summary>
           <ol className="mt-2 flex flex-col gap-2">
             {otherSources.map((source) => (

@@ -33,6 +33,9 @@ BLOCK_TAGS = [
 ]
 
 
+_BRACKETED_MARKER = re.compile(r"\[[^\[\]]{1,40}\]")
+
+
 @dataclass(frozen=True)
 class FetchedPage:
     title: str | None
@@ -125,6 +128,12 @@ def _extract_from_html(html: bytes) -> tuple[str | None, str]:
 
     for tag in soup(NON_CONTENT_TAGS):
         tag.decompose()
+
+    # Inline markers such as footnotes "[5]", "[citation needed]" or wiki "[edit]" links
+    # add no meaning and look exactly like our own [n] source citations, confusing the LLM.
+    for tag in soup(["sup", "span"]):
+        if not tag.decomposed and _BRACKETED_MARKER.fullmatch(tag.get_text(strip=True)):
+            tag.decompose()
 
     # Line breaks in the HTML source are just formatting; only block elements end a line.
     for text_node in soup.find_all(string=True):

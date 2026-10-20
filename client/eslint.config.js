@@ -30,4 +30,14 @@ export default [
       ],
     },
   },
+  {
+    // Build tooling runs in Node, not the browser.
+    files: ['vite.config.js', 'eslint.config.js'],
+    languageOptions: { globals: globals.node },
+  },
+  {
+    // shadcn/ui components export their variant helpers (e.g. buttonVariants) by design.
+    files: ['src/components/ui/**/*.jsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
 ]

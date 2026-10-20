@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, Field, HttpUrl, StringConstraints
 
 from app.db.items_repository import ItemRecord, SourceType
 
@@ -28,6 +28,22 @@ class NoteIngestRequest(BaseModel):
             ]
         }
     }
+
+
+class UrlIngestRequest(BaseModel):
+    source_type: Literal["url"]
+    url: HttpUrl = Field(description="An http(s) URL; the page is fetched server-side.")
+    title: Title | None = Field(default=None, description="Optional; the page's <title> is used if omitted.")
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [{"source_type": "url", "url": "https://en.wikipedia.org/wiki/Retrieval-augmented_generation"}]
+        }
+    }
+
+
+# `source_type` decides which model validates the body, and gives precise errors.
+IngestRequest = Annotated[NoteIngestRequest | UrlIngestRequest, Field(discriminator="source_type")]
 
 
 class ItemResponse(BaseModel):

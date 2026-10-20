@@ -2,13 +2,20 @@ import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+import truststore
 from fastapi import FastAPI
 
 from app.api import ingest, items
 from app.config import get_settings
 from app.db.database import init_db
+from app.errors import AppError, app_error_handler
 from app.logging_config import configure_logging
 from app.middleware import RequestLoggingMiddleware
+
+# Verify HTTPS certificates against the operating system's trust store instead of
+# Python's bundled list, so outbound calls work behind corporate proxies and
+# antivirus TLS inspection.
+truststore.inject_into_ssl()
 
 # Load settings at import time so a missing/invalid .env fails fast on startup.
 settings = get_settings()
@@ -35,6 +42,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.add_middleware(RequestLoggingMiddleware)
+app.add_exception_handler(AppError, app_error_handler)
 app.include_router(ingest.router)
 app.include_router(items.router)
 

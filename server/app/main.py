@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 import truststore
 from fastapi import FastAPI
 
-from app.api import ingest, items
+from app.api import ingest, items, query
 from app.config import get_settings
 from app.db.database import init_db
 from app.errors import AppError, app_error_handler
@@ -45,6 +45,7 @@ app.add_middleware(RequestLoggingMiddleware)
 app.add_exception_handler(AppError, app_error_handler)
 app.include_router(ingest.router)
 app.include_router(items.router)
+app.include_router(query.router)
 
 
 @app.get("/health", tags=["system"])

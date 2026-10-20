@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     gemini_api_key: SecretStr
     embedding_model: str = "gemini-embedding-001"
     embedding_dimensions: int = Field(default=768, ge=128, le=3072)
-    chat_model: str = "gemini-2.5-flash"
+    chat_model: str = "gemini-3.5-flash-lite"
 
     # Chunking (in characters)
     chunk_size: int = Field(default=1000, ge=200, le=8000)
